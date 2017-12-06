@@ -7,44 +7,41 @@ var WordService = require('./components/wordservice.js');
 var WeatherService = require('./components/weatherservice.js');
 
 var commands = {
-  '!video': {
+  '!play': {
     execute: getVideo,
-    description: 'get a youtube video by search word'
+    description: 'phát video trên youtube'
   },
   '!weather': {
     execute: getWeather,
-    description: 'get current weather for the given city, defaults to Stockholm'
+    description: 'lấy thời tiết của thành phố cần tìm, mặc định là Hà Nội'
   },
   '!roll': {
     execute: roll,
-    description: 'roll from 1-100'
+    description: 'roll từ 1-100'
   },
   '!help': {
     execute: showHelp
   },
-  '!words': {
-    execute: countWordsByUser,
-    description: 'get the most popular words for user of the given username, defaults to your username'
-  },
   '!queue': {
     execute: doQueue,
-    description: 'queue your song'
+    description: 'thêm bài hát của bạn vào hàng đợi'
   },
   '!voteskip': {
     execute: voteSkip,
-    description: 'vote to skip the current song'
+    description: 'vote bỏ qua bài hát hiện tại'
   },
-  '!song': {
+  '!getsong': {
     execute: showSong,
-    description: 'get the current song'
+    description: 'lấy tên bài hát hiện tại'
   }
 };
 
 Bot.on('message', message => {
-  WordService.registerMessage(message);
-
   if (isBotCommand(message)) {
-    execute(message.content, message);
+    if(message == '!sakuri')
+      message.reply('The World\'s Most Handsome And Powerful Man');
+    else
+      execute(message.content, message);
   }
 });
 
@@ -58,11 +55,11 @@ function voteSkip(args, message) {
 
 function doQueue(args, message) {
   if (args.length <= 0) {
-    return message.reply(Helper.wrap('Type of music need to be specified.'));
+    return message.reply(Helper.wrap('Loại nhạc cần được chỉ định.'));
   }
 
   if (Queue.isFull()) {
-    return message.reply(Helper.wrap('Queue is full.'));
+    return message.reply(Helper.wrap('Hàng đợi đã đầy.'));
   }
 
   if (args.startsWith('http')) {
@@ -88,18 +85,14 @@ function getVideo(args, message) {
   });
 }
 
-function countWordsByUser(args, message) {
-  WordService.countWordsByUser(args, message);
-}
-
 function getWeather(args, message) {
   WeatherService.getWeather(args, message);
 }
 
 function showHelp(args, message) {
-  var toReturn = 'No commands to run!';
+  var toReturn = 'Không có lệnh nào để thực hiện!';
   if (Object.keys(commands).length > 1) {
-    var toReturn = 'Available commands:\n';
+    var toReturn = 'Những lệnh hiện có:\n';
     for (var command in commands) {
       if (command != '!help') {
         data = commands[command];
@@ -111,13 +104,13 @@ function showHelp(args, message) {
 }
 
 function getAvailableCommandAsText(command) {
-  if (!Helper.commandIsAvailable(command)) return ' (not available)';
+  if (!Helper.commandIsAvailable(command)) return ' (không có sẵn)';
 
   return '';
 }
 
 function roll(content, message) {
-  message.reply(Helper.wrap('You rolled ' + getRandomNumber(1, 100) + ' (1-100)'));
+  message.reply(Helper.wrap('Kết quả roll của bạn là: ' + getRandomNumber(1, 100) + ' (1-100)'));
 }
 
 function isBotCommand(message) {
@@ -136,7 +129,7 @@ function execute(content, message) {
 
 function executeCommand(command, message, args) {
   if (!Helper.commandIsAvailable(command)) {
-    return message.reply(Helper.wrap('Command is not available.'));
+    return message.reply(Helper.wrap('Lệnh không có sẵn.'));
   }
 
   command.execute(getCommandArguments(args), message);
@@ -174,7 +167,6 @@ function init() {
 
     Queue = registerService(Queue, ['!queue', '!voteskip', '!song']);
     TrackHelper = registerService(TrackHelper, ['!queue', '!video']);
-    WordService = registerService(WordService, ['!words']);
     WeatherService = registerService(WeatherService, ['!weather']);
   }).catch(console.error);
 }

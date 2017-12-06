@@ -22,7 +22,7 @@ module.exports = Queue = function() {
 Queue.prototype.add = function(track, message) {
   this.queue.push(track);
 
-  message.reply(Helper.wrap('Added ' + track.title + ' to the queue. (number ' + (this.queue.indexOf(track) + 1) + ')'));
+  message.reply(Helper.wrap('Đã thêm ' + track.title + ' vào hàng đợi. (vị trí số ' + (this.queue.indexOf(track) + 1) + ')'));
 
   if (this.queue.length == 1) {
     this.play(message);
@@ -39,12 +39,12 @@ Queue.prototype.play = function(message) {
 
   if (!channel) {
     vm.queue = [];
-    return message.reply(Helper.wrap('You are not in a voice channel.'));
+    return message.reply(Helper.wrap('Bạn chưa vào voice channel.'));
   }
 
   var toPlay = vm.queue[0];
   if (!toPlay) {
-    return message.reply(Helper.wrap('No songs in queue.'));
+    return message.reply(Helper.wrap('Không có bài hát nào trong hàng đợi.'));
   }
 
   channel.join().then(connection => {
@@ -64,7 +64,7 @@ Queue.prototype.play = function(message) {
     });
 
     vm.skipVotes = [];
-    message.channel.sendMessage(Helper.wrap('Now playing: ' + toPlay.title));
+    message.channel.sendMessage(Helper.wrap('Đang phát: ' + toPlay.title));
   }).catch(console.error);
 }
 
@@ -72,9 +72,9 @@ Queue.prototype.showSong = function(message) {
   var song = this.queue[0];
 
   if (song) {
-    return message.reply(Helper.wrap('Now playing: ' + song.title + '\n' + song.url));
+    return message.reply(Helper.wrap('Đang phát: ' + song.title + '\n' + song.url));
   } else {
-    return message.reply(Helper.wrap('No song is currently playing.'));
+    return message.reply(Helper.wrap('Không có bài hát nào đang được phát.'));
   }
 }
 
@@ -83,20 +83,20 @@ Queue.prototype.voteSkip = function(message) {
   var channel = getAuthorVoiceChannel(message);
 
   if (!vm.currentDispatcher) {
-    return message.reply(Helper.wrap('No song is currently playing.'));
+    return message.reply(Helper.wrap('Không có bài hát nào đang được phát.'));
   }
 
   if (vm.admins.includes(message.member.user.id)) {
     this.currentDispatcher.end();
-    return message.reply(Helper.wrap('Of course sir.'));
+    return message.reply(Helper.wrap('Tất nhiên rồi.'));
   }
 
   if (!channel) {
-    return message.reply(Helper.wrap("You are not allowed to voteskip since you're not in the channel."));
+    return message.reply(Helper.wrap("Bạn không có quyền vote khi không có trong channel."));
   }
 
   if (vm.skipVotes.indexOf(message.author.id) > -1) {
-    return message.reply(Helper.wrap('You have already voted to skip this song.'));
+    return message.reply(Helper.wrap('Bạn đã vote bỏ qua bài này rồi.'));
   }
 
   vm.skipVotes.push(message.author.id);
@@ -107,7 +107,7 @@ Queue.prototype.voteSkip = function(message) {
     this.currentDispatcher.end();
   } else {
     var votesNeeded = getAmountOfVotesNeeded(totalMembers, vm.skipVotes.length, vm.skipmajority);
-    return message.reply(Helper.wrap('You need ' + votesNeeded + ' more vote(s) to skip this song.'));
+    return message.reply(Helper.wrap('Bạn cần thêm ' + votesNeeded + ' vote để bỏ qua bài này.'));
   }
 }
 
@@ -117,7 +117,7 @@ Queue.prototype.remove = function(message) {
   if (this.queue.length > 0) {
     this.play(message);
   } else {
-    message.channel.sendMessage(Helper.wrap('No more songs in queue.'));
+    message.channel.sendMessage(Helper.wrap('Không còn bài nào trong hàng đợi.'));
   }
 }
 
