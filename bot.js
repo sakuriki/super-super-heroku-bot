@@ -3,7 +3,6 @@ var Bot = new Discord.Client();
 var Helper = require('./components/helper.js');
 var Queue = require('./components/queue.js');
 var TrackHelper = require('./components/trackhelper.js');
-var WordService = require('./components/wordservice.js');
 var WeatherService = require('./components/weatherservice.js');
 
 var commands = {
@@ -38,10 +37,11 @@ var commands = {
 
 Bot.on('message', message => {
   if (isBotCommand(message)) {
-    if(message == '!sakuri')
+    if(message == '!sakuri') {
       message.reply('The World\'s Most Handsome And Powerful Man');
-    else
+    } else {
       execute(message.content, message);
+    }
   }
 });
 
